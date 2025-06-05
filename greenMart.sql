@@ -1,6 +1,6 @@
--- users
+
 CREATE TABLE users (
-    userId INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
     userName VARCHAR(255),
     email VARCHAR(255),
     password VARCHAR(255),
@@ -9,11 +9,26 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     partner_id INT,
     address_id INT,
-    FOREIGN KEY (partner_id) REFERENCES users(userId),
-    FOREIGN KEY (address_id) REFERENCES addresses(address_id)
+    FOREIGN KEY (partner_id) REFERENCES partners(partner_id)
 );
 
--- categories
+CREATE TABLE partners(
+        partner_id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT,
+        company_name VARCHAR(255),
+        service_area VARCHAR(255),
+        contact_email VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+
+ALTER TABLE partners
+ADD COLUMN user_id INT,
+ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+
 CREATE TABLE categories (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255),
@@ -21,7 +36,7 @@ CREATE TABLE categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- products
+
 CREATE TABLE products (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
     category_id INT,
@@ -34,7 +49,7 @@ CREATE TABLE products (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
--- addresses
+
 CREATE TABLE addresses (
     address_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -44,10 +59,10 @@ CREATE TABLE addresses (
     state VARCHAR(100),
     country VARCHAR(100),
     address_type VARCHAR(50),
-    FOREIGN KEY (user_id) REFERENCES users(userId)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- orders
+
 CREATE TABLE orders (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -58,12 +73,11 @@ CREATE TABLE orders (
     delivery_partner_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(userId),
-    FOREIGN KEY (shipping_address_id) REFERENCES addresses(address_id),
-    FOREIGN KEY (delivery_partner_id) REFERENCES users(userId)
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (shipping_address_id) REFERENCES addresses(address_id)
 );
 
--- order_items
+
 CREATE TABLE order_items (
     order_item_id INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT,
@@ -76,18 +90,18 @@ CREATE TABLE order_items (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
--- cart_items
+
 CREATE TABLE cart_items (
     user_id INT,
     product_id INT,
     quantity INT,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES users(userId),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
--- payments
+
 CREATE TABLE payments (
     transaction_id VARCHAR(100) PRIMARY KEY,
     order_id INT,
@@ -98,7 +112,7 @@ CREATE TABLE payments (
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
--- review
+
 CREATE TABLE review (
     review_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -106,7 +120,7 @@ CREATE TABLE review (
     review TEXT,
     rating INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(userId),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
@@ -117,5 +131,5 @@ CREATE TABLE wishlist (
     user_id INT,
     comment TEXT,
     FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (user_id) REFERENCES users(userId)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
