@@ -42,7 +42,7 @@ router.get("/byemail/:email", (req, res) => {
 
 // admin/DELETE /users/:id
 router.delete("/:id", (req, res) => {
-    db.query("DELETE FROM users WHERE user_id=?", [req.params.id],
+    db.query("update users set status = 0 where user_id = ?", [req.params.id],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -64,6 +64,61 @@ router.patch("/changepasswd", (req,res) => {
             if(result.affectedRows !== 1)
                 return res.send(apiError("User not found"))
             res.send(apiSuccess("User password updated"))
+        }
+    )
+})
+
+
+//Get User by a perticular address(Join with addresses table)
+//get by city
+router.get("/bycity/city/:city", (req, res) => {
+    db.query("SELECT * FROM users u join addresses a on u.address_id = a.address_id  WHERE a.city=?", [req.params.city],
+        (err, result) => {
+            if(err)
+                return res.send(apiError(err))
+            if(result.length !== 1)
+                return res.send(apiError("User not found"))
+            return res.send(apiSuccess(result[0]))
+        }
+    )
+})
+
+
+//get by Country
+router.get("/bycountry//:country", (req, res) => {
+    db.query("SELECT * FROM users u join addresses a on u.address_id = a.address_id  WHERE a.country=?", [req.params.country],
+        (err, result) => {
+            if(err)
+                return res.send(apiError(err))
+            if(result.length !== 1)
+                return res.send(apiError("User not found"))
+            return res.send(apiSuccess(result[0]))
+        }
+    )
+})
+
+//by postal code
+router.get("/postalcode///:postalCode", (req, res) => {
+    db.query("SELECT * FROM users u join addresses a on u.address_id = a.address_id  WHERE a.postal_code=?", [req.params.postalCode],
+        (err, result) => {
+            if(err)
+                return res.send(apiError(err))
+            if(result.length !== 1)
+                return res.send(apiError("User not found"))
+            return res.send(apiSuccess(result[0]))
+        }
+    )
+})
+
+//by state
+router.get("//:state", (req, res) => {
+    db.query("SELECT * FROM users u join addresses a on u.address_id = a.address_id  WHERE a.state=?", [req.params.state],
+        (err, result) => {
+            if(err)
+                return res.send(apiError(err))
+            if(result.length !== 1)
+                return res.send(apiError("User not found"))
+            return res.send(apiSuccess(result[0]))
         }
     )
 })
