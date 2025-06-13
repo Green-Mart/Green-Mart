@@ -1,0 +1,7 @@
+##backend setup
+
+npm init -y
+npm install express mysql2 bcryptjs jsonwebtoken cors dotenv
+npm install express-validator multer nodemailer
+npm install -D nodemon
+
