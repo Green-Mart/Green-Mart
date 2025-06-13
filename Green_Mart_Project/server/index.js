@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
 const productRouter = require("./routers/product")
-// const reviewRouter = require("./routers/review")
+const reviewRouter = require("./routers/review")
 // const userRouter = require("./routers/users")
 //const {jwtAuth} = require("./utils/jwtauth")
 
@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json());
 //app.use(jwtAuth);
 app.use("/product", productRouter);
-// app.use("/review",reviewRouter);
+app.use("/review",reviewRouter);
 // app.use("/users",userRouter);
 
 const port = 4000;
