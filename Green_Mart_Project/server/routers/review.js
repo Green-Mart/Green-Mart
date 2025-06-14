@@ -53,7 +53,7 @@ router.get("/:rating1/:rating2" ,(req,res)=>{
 //update review
 router.patch("/:user_id//:product_id" , (req,res) =>{
     const { reviewComment, productRating } = req.body
-    db.query("update Reviews set rReviewComment = ? , productRating = ? where userId =? and productId = ?" ,[reviewComment, productRating  ,req.params.user_id ,req.params.product_id] ,(err,result) =>{
+    db.query("update Reviews set reviewComment = ? , productRating = ? where userId =? and productId = ?" ,[reviewComment, productRating  ,req.params.user_id ,req.params.product_id] ,(err,result) =>{
         if(err) return res.send(apiError(err))
         res.send(apiSuccess(result));
     })
