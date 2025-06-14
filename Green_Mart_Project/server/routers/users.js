@@ -3,7 +3,8 @@ const { apiSuccess , apiError } = require("../utils/apiresult")
 const express = require("express")
 const router = express.Router();
 //const multer  = require({dest: "uploads/"})
-const path  = require("path")
+const path  = require("path");
+
 
 //get users by id
 router.get("/:id", (req, res) => {
@@ -57,7 +58,7 @@ router.delete("/:id", (req, res) => {
 router.patch("/changepasswd", (req,res) => {
     const {userId,userPassword} = req.body
     //const encPasswd = bcrypt.hashSync(passwd, 10)
-    db.query("UPDATE Users SET userPassword=? WHERE userId=?", [password, user_id],
+    db.query("UPDATE Users SET userPassword=? WHERE userId=?", [userPassword, userId],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -71,6 +72,13 @@ router.patch("/changepasswd", (req,res) => {
 
 //Get User by a perticular address(Join with addresses table)
 //get by city
+
+router.post("",(req,res) =>{
+    const {streetAddress,city,state,postalCode,country,addressType} = req.body
+    const userId = ""
+    db.query("insert into Addresses(userId,streetAddress,city,state,postalCode,country,addressType) values(?,?,?,?,?,?,?) ", [userId,streetAddress,city,state,postalCode,country,addressType])
+})
+
 router.get("/bycity/city/:city", (req, res) => {
     db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId  WHERE a.city=?", [req.params.city],
         (err, result) => {
@@ -99,7 +107,7 @@ router.get("/bycountry//:country", (req, res) => {
 
 //by postal code
 router.get("/postalcode///:postalCode", (req, res) => {
-    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId WHERE a.postal_code=?", [req.params.postalCode],
+    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId WHERE a.postalCode=?", [req.params.postalCode],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -122,5 +130,18 @@ router.get("//:state", (req, res) => {
         }
     )
 })
+
+router.patch("/changeAddress",(req,res) =>{
+    const {userId , city} = req.body
+    db.query("update Addresses set city = ? ,postalCode =? , streetAddress = ? where userId = ? ", [city , userId], (err,result)=>{
+        if(err)
+            return res.send(apiError(err))
+        if(result.affectedRows <= 0)
+                return res.send(apiError("User not found"))
+        res.send(apiSuccess("User details updated"))
+    })
+})
+
+
 
 module.exports = router
