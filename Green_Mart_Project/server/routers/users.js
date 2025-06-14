@@ -1,9 +1,69 @@
 const db = require("../utils/dbpool")
 const { apiSuccess , apiError } = require("../utils/apiresult")
+const {createToken} = require("../utils/jwtauth")
+const bcrypt = require("bcrypt")
 const express = require("express")
 const router = express.Router();
 //const multer  = require({dest: "uploads/"})
 const path  = require("path")
+
+// POST /users/signin
+router.post("/signin", (req, resp) => {
+    const { email, passwd } = req.body
+    //console.log(req.url + " - " + req.method + " : " + email + " & " + passwd)
+    db.query("SELECT * FROM users WHERE userEmail=?", [email],
+        (err, results) => {
+            if (err)
+                return resp.send(apiError(err))
+            //console.log("results: ", results)
+            if (results.length !== 1) // user with email not found
+                return resp.send(apiError("Invalid email"))
+            const dbUser = results[0]
+            const isMatching = bcrypt.compareSync(passwd, dbUser.userPassword)
+            //console.log("is passwd matching: " , isMatching)
+            if (!isMatching) // password not matching
+                return resp.send(apiError("Invalid password"))
+            // create jwt token and add it in response
+            const token = createToken(dbUser)
+            resp.send(apiSuccess({ ...dbUser, token })) // password matched for this user
+        }
+    )
+})
+
+
+// POST /users
+router.post("/signup", (req, resp) => {
+    const { name, email, passwd, mobile, role: inputRole } = req.body;
+    const encPasswd = bcrypt.hashSync(passwd, 10);
+    // Allowed roles as per ENUM in DB
+    const allowedRoles = ["customer", "shopkeeper", "admin", "partner"];
+
+    // If input role is valid, use it; else default to "customer"
+    const role = allowedRoles.includes(inputRole) ? inputRole : "customer";
+    const createdAt = new Date();
+
+    db.query(
+        "INSERT INTO users (userName, userEmail, userPassword, userPhone, userRole) VALUES (?, ?, ?, ?, ?)",
+        [name, email, encPasswd, mobile, role],
+        (err, result) => {
+            if (err)
+                return resp.send(apiError(err));
+
+            if (result.affectedRows === 1) {
+                db.query(
+                    "SELECT * FROM users WHERE userId=?",
+                    [result.insertId],
+                    (err, results) => {
+                        if (err)
+                            return resp.send(apiError(err));
+                        resp.send(apiSuccess(results[0]));
+                    }
+                );
+            }
+        }
+    );
+});
+
 
 //get users by id
 router.get("/:id", (req, res) => {
