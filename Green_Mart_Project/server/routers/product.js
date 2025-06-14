@@ -64,11 +64,11 @@ router.get("/customer/allProducts/name//:name",(req,res) =>{
 //admin
 //add product
 router.post("/admin", (req, resp) => {
-	const { productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
+	const {categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
 
 	db.query(
-		"INSERT INTO products(productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ) VALUES(?, ?, ?, ?, ?,?,?)",
-		[productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
+		"INSERT INTO products(categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ) VALUES(?, ?, ?, ?, ?,?)",
+		[categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
 		(err, result) => {
 			if (err) return resp.send(apiError(err));
 			// if INSERT is successful, fetch newly inserted record from db and return it
@@ -95,6 +95,8 @@ router.delete("/admin/:id" ,(req,res) =>{
 		    else res.send(apiError("product not found"));
         })
 })
+
+
 
 
 
