@@ -72,7 +72,7 @@ router.patch("/changepasswd", (req,res) => {
 //Get User by a perticular address(Join with addresses table)
 //get by city
 router.get("/bycity/city/:city", (req, res) => {
-    db.query("SELECT * FROM users u join Addresses a on u.userId = a.userId  WHERE a.city=?", [req.params.city],
+    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId  WHERE a.city=?", [req.params.city],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -86,7 +86,7 @@ router.get("/bycity/city/:city", (req, res) => {
 
 //get by Country
 router.get("/bycountry//:country", (req, res) => {
-    db.query("SELECT * FROM users u join Addresses a on u.userId = a.userId  WHERE a.country=?", [req.params.country],
+    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId  WHERE a.country=?", [req.params.country],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -99,7 +99,7 @@ router.get("/bycountry//:country", (req, res) => {
 
 //by postal code
 router.get("/postalcode///:postalCode", (req, res) => {
-    db.query("SELECT * FROM users u join Addresses a on u.userId = a.userId WHERE a.postal_code=?", [req.params.postalCode],
+    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId WHERE a.postal_code=?", [req.params.postalCode],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -112,7 +112,7 @@ router.get("/postalcode///:postalCode", (req, res) => {
 
 //by state
 router.get("//:state", (req, res) => {
-    db.query("SELECT * FROM users u join join Addresses a on u.userId = a.userId  WHERE a.state=?", [req.params.state],
+    db.query("SELECT * FROM Users u join join Addresses a on u.userId = a.userId  WHERE a.state=?", [req.params.state],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
