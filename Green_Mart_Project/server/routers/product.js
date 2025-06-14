@@ -64,10 +64,10 @@ router.get("/customer/allProducts/name//:name",(req,res) =>{
 //admin
 //add product
 router.post("/admin", (req, resp) => {
-	const { productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
+	const { categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
 
 	db.query(
-		"INSERT INTO products(productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ) VALUES(?, ?, ?, ?, ?,?,?)",
+		"INSERT INTO products(categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ) VALUES(?, ?, ?, ?, ?,?)",
 		[productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
 		(err, result) => {
 			if (err) return resp.send(apiError(err));
