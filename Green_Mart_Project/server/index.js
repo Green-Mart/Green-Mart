@@ -12,8 +12,12 @@ const {jwtAuth} = require("./utils/jwtauth")
 const cors  =require("cors")
 app.use(cors())
 
+app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(jwtAuth);
+
+
+
 
 app.use("/product", productRouter);
 app.use("/review",reviewRouter);
