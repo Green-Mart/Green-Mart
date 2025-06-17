@@ -12,7 +12,7 @@ app.use(express.json());
 //app.use(jwtAuth);
 app.use("/product", productRouter);
 app.use("/review",reviewRouter);
-app.use("/users",userRouter);
+app.use("/user",userRouter);
 
 const port = 4000;
 app.listen(port, "0.0.0.0", () => {
