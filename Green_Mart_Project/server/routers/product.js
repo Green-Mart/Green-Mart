@@ -64,11 +64,12 @@ router.get("/customer/allProducts/name//:name",(req,res) =>{
 //admin
 //add product
 router.post("/admin", (req, resp) => {
-	const {categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
+	const { categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
 
 	db.query(
 		"INSERT INTO products(categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ) VALUES(?, ?, ?, ?, ?,?)",
-		[categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
+		[productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
+
 		(err, result) => {
 			if (err) return resp.send(apiError(err));
 			// if INSERT is successful, fetch newly inserted record from db and return it
