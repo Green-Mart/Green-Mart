@@ -2,7 +2,7 @@ create database green_mart_project;
 
 use green_mart_project;
 
--- 1. Users Table
+
 CREATE TABLE Users (
     userId INT PRIMARY KEY AUTO_INCREMENT,
     userName VARCHAR(100) NOT NULL,
@@ -13,9 +13,7 @@ CREATE TABLE Users (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 2. Addresses Table
 CREATE TABLE Addresses (
     addressId INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
@@ -29,74 +27,64 @@ CREATE TABLE Addresses (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 3. Categories Table
 CREATE TABLE Categories (
     categoryId INT PRIMARY KEY AUTO_INCREMENT,
-    categoryName VARCHAR(100) NOT NULL, -- Renamed for clarity
-    categoryDescription TEXT            -- Renamed for clarity
+    categoryName VARCHAR(100) NOT NULL, 
+    categoryDescription TEXT            
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 4. Products Table
 CREATE TABLE Products (
     productId INT PRIMARY KEY AUTO_INCREMENT,
     categoryId INT NOT NULL,
-    productName VARCHAR(100) NOT NULL, -- Renamed for clarity
-    productDescription TEXT,           -- Renamed for clarity
+    productName VARCHAR(100) NOT NULL, 
+    productDescription TEXT,           
     productPrice DECIMAL(10,2) NOT NULL,
-    productQuantity INT NOT NULL,      -- Renamed for clarity
-    productImageUrl VARCHAR(255),      -- Renamed for clarity
+    productQuantity INT NOT NULL,      
+    productImageUrl VARCHAR(255),      
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (categoryId) REFERENCES Categories(categoryId)
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 5. Orders Table
 CREATE TABLE Orders (
     orderId INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
     shippingAddressId INT,
     orderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    orderStatus ENUM('pending', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending', -- Renamed for clarity
-    totalOrderAmount DECIMAL(10,2) NOT NULL, -- Renamed for clarity
+    orderStatus ENUM('pending', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+    totalOrderAmount DECIMAL(10,2) NOT NULL, 
     deliveryPartnerId INT,
     FOREIGN KEY (userId) REFERENCES Users(userId)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (shippingAddressId) REFERENCES Addresses(addressId)
         ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (deliveryPartnerId) REFERENCES Users(userId) -- Assuming delivery partners are also users
+    FOREIGN KEY (deliveryPartnerId) REFERENCES Users(userId) 
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 6. Order Items Table
 CREATE TABLE OrderItems (
     orderItemId INT PRIMARY KEY AUTO_INCREMENT,
     orderId INT NOT NULL,
     productId INT NOT NULL,
-    itemQuantity INT NOT NULL,        -- Renamed for clarity
+    itemQuantity INT NOT NULL,        
     priceAtOrder DECIMAL(10,2) NOT NULL,
-    itemStatus ENUM('pending', 'shipped', 'delivered') DEFAULT 'pending', -- Renamed for clarity
+    itemStatus ENUM('pending', 'shipped', 'delivered') DEFAULT 'pending', 
     FOREIGN KEY (orderId) REFERENCES Orders(orderId)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (productId) REFERENCES Products(productId)
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 7. Cart Items Table
 CREATE TABLE CartItems (
     userId INT NOT NULL,
     productId INT NOT NULL,
-    cartItemQuantity INT NOT NULL, -- Renamed for clarity
+    cartItemQuantity INT NOT NULL, 
     PRIMARY KEY (userId, productId),
     FOREIGN KEY (userId) REFERENCES Users(userId)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -104,28 +92,24 @@ CREATE TABLE CartItems (
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 8. Payments Table
 CREATE TABLE Payments (
     transactionId VARCHAR(100) PRIMARY KEY,
     orderId INT NOT NULL,
-    paymentAmount DECIMAL(10,2) NOT NULL, -- Renamed for clarity
-    paymentMethod ENUM('card', 'upi', 'wallet', 'cod') NOT NULL, -- Renamed for clarity
-    paymentStatus ENUM('pending', 'completed', 'failed') DEFAULT 'pending', -- Renamed for clarity
+    paymentAmount DECIMAL(10,2) NOT NULL, 
+    paymentMethod ENUM('card', 'upi', 'wallet', 'cod') NOT NULL, 
+    paymentStatus ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
     paymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (orderId) REFERENCES Orders(orderId)
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 9. Reviews Table
 CREATE TABLE Reviews (
     userId INT NOT NULL,
     productId INT NOT NULL,
-    productRating INT CHECK (productRating BETWEEN 1 AND 5), -- Renamed for clarity
-    reviewComment TEXT,                                      -- Renamed for clarity
+    productRating INT CHECK (productRating BETWEEN 1 AND 5), 
+    reviewComment TEXT,                                      
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userId, productId),
     FOREIGN KEY (userId) REFERENCES Users(userId)
@@ -134,14 +118,12 @@ CREATE TABLE Reviews (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
----
 
--- 10. Wish Lists Table
 CREATE TABLE WishLists (
     wishListId INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
     productId INT NOT NULL,
-    wishListComment TEXT, -- Renamed for clarity
+    wishListComment TEXT, 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES Users(userId)
         ON DELETE CASCADE ON UPDATE CASCADE,
