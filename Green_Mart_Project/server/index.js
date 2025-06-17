@@ -22,6 +22,8 @@ app.use("/category",categoryRouter);
 app.use("/cartitem",cartIteam);
 app.use("/wishlist",wishRoute)
 app.use("/payment",payRoute)
+
+
 const port = 4000;
 app.listen(port, "0.0.0.0", () => {
 	console.log("server ready at port", port);
