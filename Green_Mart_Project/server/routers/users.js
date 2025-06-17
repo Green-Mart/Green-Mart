@@ -115,8 +115,10 @@ router.delete("/:id", (req, res) => {
 })
 
 // PATCH /users/changepasswd
-router.patch("/changepasswd", (req,res) => {
-    const {userId,userPassword} = req.body
+router.patch("/change/passwd", (req,res) => {
+    const {userPassword} = req.body
+    const userId = req.user.id
+    console.log(req.user)
     //const encPasswd = bcrypt.hashSync(passwd, 10)
     db.query("UPDATE Users SET userPassword=? WHERE userId=?", [userPassword, userId],
         (err, result) => {
@@ -131,14 +133,22 @@ router.patch("/changepasswd", (req,res) => {
 
 
 //Get User by a perticular address(Join with addresses table)
-//get by city
 
-router.post("",(req,res) =>{
+
+router.post("/post/address",(req,res) =>{
     const {streetAddress,city,state,postalCode,country,addressType} = req.body
-    const userId = ""
-    db.query("insert into Addresses(userId,streetAddress,city,state,postalCode,country,addressType) values(?,?,?,?,?,?,?) ", [userId,streetAddress,city,state,postalCode,country,addressType])
+    console.log(req.user)
+    const userId = req.user.id
+    
+    db.query("insert into Addresses(userId,streetAddress,city,state,postalCode,country,addressType) values(?,?,?,?,?,?,?) ",
+         [userId,streetAddress,city,state,postalCode,country,addressType] ,(err,result)=>{
+             if(err) return res.send(apiError(err))
+                if (result.affectedRows === 1) res.send(apiSuccess("Address added"));
+		        else res.send(apiError(err));
+         })
 })
 
+//get by city
 router.get("/bycity/city/:city", (req, res) => {
     db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId  WHERE a.city=?", [req.params.city],
         (err, result) => {
@@ -192,8 +202,9 @@ router.get("//:state", (req, res) => {
 })
 
 router.patch("/changeAddress",(req,res) =>{
-    const {userId , city} = req.body
-    db.query("update Addresses set city = ? ,postalCode =? , streetAddress = ? where userId = ? ", [city , userId], (err,result)=>{
+    const { city ,postalCode,streetAddress} = req.body
+    const userId = req.user.id
+    db.query("update Addresses set city = ? ,postalCode =? , streetAddress = ? where userId = ? ", [city ,postalCode,streetAddress,userId], (err,result)=>{
         if(err)
             return res.send(apiError(err))
         if(result.affectedRows <= 0)

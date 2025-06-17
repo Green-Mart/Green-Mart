@@ -6,7 +6,8 @@ const path = require("path");
 
 
 router.post("/", (req, res) => {
-    const { userId, productId, wishListComment } = req.body;
+    const {productId, wishListComment } = req.body;
+    const userId = req.user.id
     db.query(
         "INSERT INTO WishLists(userId, productId, wishListComment) VALUES(?, ?, ?)",
         [userId, productId, wishListComment], 
@@ -23,9 +24,10 @@ router.post("/", (req, res) => {
 
 router.delete("/:wishListId", (req, res) => {
     const wishListId = req.params.wishListId
+    const userId = req.user.id
     db.query(
-        "DELETE FROM WishLists WHERE wishListId = ?",
-        [wishListId],
+        "DELETE FROM WishLists WHERE wishListId = ? and userId =?",
+        [wishListId ,userId],
         (err, result) => {
             if (err) 
                 return res.send(apiError(err));
@@ -40,7 +42,8 @@ router.delete("/:wishListId", (req, res) => {
 
 
 router.get("/all", (req, res) => {
-    db.query("SELECT * FROM WishLists", (err, result) => {
+    const userId = req.user.id
+    db.query("SELECT * FROM WishLists where userId= ?",[userId] ,(err, result) => {
         if (err) 
             return res.send(apiError(err));
         res.send(apiSuccess(result));

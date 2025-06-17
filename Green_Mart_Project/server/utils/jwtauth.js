@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = "GreenMartApp"; // process.env.JWT_SECRET
 
 function createToken(user) {
-  const payload = { id: user.id, role: user.role };
+  const payload = { id: user.userId, role: user.userRole };
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" });
   return token;
 }

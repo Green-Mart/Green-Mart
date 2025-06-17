@@ -63,12 +63,17 @@ router.get("/customer/allProducts/name//:name",(req,res) =>{
 
 //admin
 //add product
-router.post("/admin", (req, resp) => {
-	const { categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
-
+router.post("/shopkeeper", (req, resp) => {
+    const { id, role } = req.user;
+    console.log(req.user)
+  
+  if (role !== "shopkeeper") {
+    return resp.status(403).send({ error: "Only shopkeepers can add products" });
+  }
+	const {categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl } = req.body;
 	db.query(
 		"INSERT INTO products(categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ) VALUES(?, ?, ?, ?, ?,?)",
-		[productId,categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
+		[categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl ],
 
 		(err, result) => {
 			if (err) return resp.send(apiError(err));
@@ -89,7 +94,13 @@ router.post("/admin", (req, resp) => {
 
 
 //delete product
-router.delete("/admin/:id" ,(req,res) =>{
+router.delete("/shopkeeper/:id" ,(req,res) =>{
+     const { id, role } = req.user;
+    console.log(req.user)
+  
+  if (role !== "shopkeeper") {
+    return res.status(403).send({ error: "Only shopkeepers can delete products" });
+  }
         db.query("delete from Products where productId = ?" ,[req.params.id] , (err,result)=>{
             if(err) return res.send(err)
             if (result.affectedRows === 1) res.send(apiSuccess("Product deleted"));

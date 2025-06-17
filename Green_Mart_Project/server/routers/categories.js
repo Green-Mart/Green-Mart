@@ -7,6 +7,11 @@ const db = require("../utils/dbpool")
 router.post("/insert", (req, resp) => {
 	const {categoryName,categoryDescription} = req.body;
 
+	const {id , role} = req.user
+
+	if(role !== "admin" || role !== "shopkepper"){
+		return resp.status(403).send({ error: "you are not authentic users " });
+	}
 	db.query(
 		"INSERT INTO categories(categoryName,categoryDescription) VALUES(?, ?)",
 		[categoryName,categoryDescription],

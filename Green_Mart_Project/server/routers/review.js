@@ -6,9 +6,9 @@ const path  = require("path")
 
 //post review
 router.post("" , (req,res) =>{
-    const { productId , reviewComment,productRating } = req.body;
+    const {productId , reviewComment,productRating } = req.body;
     const userId = req.user.id
-    db.query("insert into Reviews(userId, productId , reviewComment,productRating) values(?,?,?,?,?)" ,
+    db.query("insert into Reviews(userId, productId , reviewComment,productRating) values(?,?,?,?)" ,
          [ userId, productId , reviewComment,productRating] , (err,result) =>{
             if(err) return res.send(apiError(err))
             if (result.affectedRows === 1) res.send(apiSuccess("review added"));
