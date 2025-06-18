@@ -1,9 +1,70 @@
 const db = require("../utils/dbpool")
 const { apiSuccess , apiError } = require("../utils/apiresult")
+const {createToken} = require("../utils/jwtauth")
+const bcrypt = require("bcrypt")
 const express = require("express")
 const router = express.Router();
 //const multer  = require({dest: "uploads/"})
-const path  = require("path")
+const path  = require("path");
+
+
+// POST /users/signin
+router.post("/signin", (req, resp) => {
+    const { email, passwd } = req.body
+    //console.log(req.url + " - " + req.method + " : " + email + " & " + passwd)
+    db.query("SELECT * FROM users WHERE userEmail=?", [email],
+        (err, results) => {
+            if (err)
+                return resp.send(apiError(err))
+            //console.log("results: ", results)
+            if (results.length !== 1) // user with email not found
+                return resp.send(apiError("Invalid email"))
+            const dbUser = results[0]
+            const isMatching = bcrypt.compareSync(passwd, dbUser.userPassword)
+            //console.log("is passwd matching: " , isMatching)
+            if (!isMatching) // password not matching
+                return resp.send(apiError("Invalid password"))
+            // create jwt token and add it in response
+            const token = createToken(dbUser)
+            resp.send(apiSuccess({ ...dbUser, token })) // password matched for this user
+        }
+    )
+})
+
+
+// POST /users
+router.post("/signup", (req, resp) => {
+    const { name, email, passwd, mobile, role: inputRole } = req.body;
+    const encPasswd = bcrypt.hashSync(passwd, 10);
+    // Allowed roles as per ENUM in DB
+    const allowedRoles = ["customer", "shopkeeper", "admin", "partner"];
+
+    // If input role is valid, use it; else default to "customer"
+    const role = allowedRoles.includes(inputRole) ? inputRole : "customer";
+    const createdAt = new Date();
+
+    db.query(
+        "INSERT INTO users (userName, userEmail, userPassword, userPhone, userRole) VALUES (?, ?, ?, ?, ?)",
+        [name, email, encPasswd, mobile, role],
+        (err, result) => {
+            if (err)
+                return resp.send(apiError(err));
+
+            if (result.affectedRows === 1) {
+                db.query(
+                    "SELECT * FROM users WHERE userId=?",
+                    [result.insertId],
+                    (err, results) => {
+                        if (err)
+                            return resp.send(apiError(err));
+                        resp.send(apiSuccess(results[0]));
+                    }
+                );
+            }
+        }
+    );
+});
+
 
 //get users by id
 router.get("/:id", (req, res) => {
@@ -54,10 +115,12 @@ router.delete("/:id", (req, res) => {
 })
 
 // PATCH /users/changepasswd
-router.patch("/changepasswd", (req,res) => {
-    const {userId,userPassword} = req.body
+router.patch("/change/passwd", (req,res) => {
+    const {userPassword} = req.body
+    const userId = req.user.id
+    console.log(req.user)
     //const encPasswd = bcrypt.hashSync(passwd, 10)
-    db.query("UPDATE Users SET userPassword=? WHERE userId=?", [password, user_id],
+    db.query("UPDATE Users SET userPassword=? WHERE userId=?", [userPassword, userId],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -70,6 +133,21 @@ router.patch("/changepasswd", (req,res) => {
 
 
 //Get User by a perticular address(Join with addresses table)
+
+
+router.post("/post/address",(req,res) =>{
+    const {streetAddress,city,state,postalCode,country,addressType} = req.body
+    console.log(req.user)
+    const userId = req.user.id
+    
+    db.query("insert into Addresses(userId,streetAddress,city,state,postalCode,country,addressType) values(?,?,?,?,?,?,?) ",
+         [userId,streetAddress,city,state,postalCode,country,addressType] ,(err,result)=>{
+             if(err) return res.send(apiError(err))
+                if (result.affectedRows === 1) res.send(apiSuccess("Address added"));
+		        else res.send(apiError(err));
+         })
+})
+
 //get by city
 router.get("/bycity/city/:city", (req, res) => {
     db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId  WHERE a.city=?", [req.params.city],
@@ -99,7 +177,7 @@ router.get("/bycountry//:country", (req, res) => {
 
 //by postal code
 router.get("/postalcode///:postalCode", (req, res) => {
-    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId WHERE a.postal_code=?", [req.params.postalCode],
+    db.query("SELECT * FROM Users u join Addresses a on u.userId = a.userId WHERE a.postalCode=?", [req.params.postalCode],
         (err, result) => {
             if(err)
                 return res.send(apiError(err))
@@ -122,5 +200,19 @@ router.get("//:state", (req, res) => {
         }
     )
 })
+
+router.patch("/changeAddress",(req,res) =>{
+    const { city ,postalCode,streetAddress} = req.body
+    const userId = req.user.id
+    db.query("update Addresses set city = ? ,postalCode =? , streetAddress = ? where userId = ? ", [city ,postalCode,streetAddress,userId], (err,result)=>{
+        if(err)
+            return res.send(apiError(err))
+        if(result.affectedRows <= 0)
+                return res.send(apiError("User not found"))
+        res.send(apiSuccess("User details updated"))
+    })
+})
+
+
 
 module.exports = router
