@@ -2,7 +2,8 @@ const db = require("../utils/dbpool")
 const { apiSuccess , apiError } = require("../utils/apiresult")
 const express = require("express")
 const router = express.Router();
-//const multer  = require({dest: "uploads/"})
+const multer = require("multer");
+const upload  = multer({dest: "uploads/"})
 const path  = require("path")
 
 
@@ -109,7 +110,36 @@ router.delete("/shopkeeper/:id" ,(req,res) =>{
 })
 
 
+router.post("", upload.single("productimg"), (req, resp) => {
+	const {categoryId,productName,productDescription,productPrice,productQuantity} = req.body;
+    const { id, role } = req.user;
+    console.log(req.user)
+  
+  if (role !== "admin") {
+    return resp.status(403).send({ error: "Only admin can add products " });
+  }
 
+	const productimgFilename = req.file ? req.file.filename : null;
+
+	db.query(
+		"INSERT INTO products(categoryId,productName,productDescription,productPrice,productQuantity,productImageUrl) VALUES(?, ?, ?, ?, ?,?)",
+		[categoryId,productName,productDescription,productPrice,productQuantity,productimgFilename],
+		(err, result) => {
+			if (err) return resp.send(apiError(err));
+			// if INSERT is successful, fetch newly inserted record from db and return it
+			if (result.affectedRows === 1) {
+				db.query(
+					"SELECT * FROM products WHERE productId=?",
+					[result.insertId],
+					(err, result) => {
+						if (err) return resp.send(apiError(err));
+						resp.send(apiSuccess(result[0]));
+					}
+				);
+			}
+		}
+	);
+});
 
 
 module.exports = router;
