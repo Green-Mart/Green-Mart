@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="my_primary">#FF5964</color>
+    <color name="my_secondary">#FFE74C</color>
+
+    <color name="off_white">#FAFAFA</color>
+<!--    <color name="light_gray">#C3C3C3</color>-->
+    <color name="blue">#1989EB</color>
+    <color name="green">#5F7CB342</color>
+    <color name="gray">#808080</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- Order Status Colors -->
+    <color name="colorPending">#FF9800</color>  <!-- Orange 500 -->
+    <color name="colorShipped">#2196F3</color>  <!-- Blue 500 -->
+    <color name="colorDelivered">#4CAF50</color>  <!-- Green 500 -->
+    <color name="colorCancelled">#F44336</color>  <!-- Red 500 -->
+    <color name="colorDefault">#9E9E9E</color>
+
+    <color name="primary_color">#6200EE</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="dark_gray">#757575</color>
+
+
+</resources>
